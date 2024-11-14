@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchProducts } from '../api/api';
 
 function ProductList() {
@@ -22,7 +23,9 @@ function ProductList() {
             <ul>
                 {products.map((product) => (
                     <li key={product.id}>
-                        {product.name} - {product.price_kc} Kč / {product.price_eur} €
+                        <Link to={`/product/${product.id}`}>
+                            {product.name} - {product.price_kc} Kč / {product.price_eur} €
+                        </Link>
                     </li>
                 ))}
             </ul>
@@ -31,3 +34,4 @@ function ProductList() {
 }
 
 export default ProductList;
+
