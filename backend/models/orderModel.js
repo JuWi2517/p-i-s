@@ -22,8 +22,6 @@ async function getAllOrders() {
 async function createOrder(orderData) {
     const conn = await pool.getConnection();
     try {
-        console.log('orderData:', orderData); // Log orderData
-
         const sql = `INSERT INTO orders (user_id, order_date, status, total_price_kc, total_price_eu) VALUES (?, ?, ?, ?, ?)`;
         const orderDate = new Date(orderData.order_date).toISOString().slice(0, 19).replace('T', ' ');
         const [result] = await conn.query(sql, [orderData.user_id, orderDate, orderData.status, orderData.total_price_kc, orderData.total_price_eu]);
@@ -38,11 +36,12 @@ async function createOrder(orderData) {
             item.totalPrice * 0.04
         ]);
 
-        console.log('orderItemsData:', orderItemsData); // Log orderItemsData
-
         await conn.query(orderItemsSql, [orderItemsData]);
 
         return result;
+    } catch (error) {
+        // Handle the error silently
+        return null; // Return null or any other appropriate value
     } finally {
         conn.release();
     }

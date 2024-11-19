@@ -15,40 +15,31 @@ async function getOrders(req, res) {
 async function createOrder(req, res) {
     const orderData = req.body;
 
-    console.log('Received orderData:', orderData); // Log received orderData
-
     if (!orderData || !orderData.user_id || !orderData.items || !orderData.items.length) {
         return res.status(400).json({ message: 'Invalid order data' });
     }
 
-    // Validate and log item properties
+    // Validate item properties
     for (const item of orderData.items) {
-        console.log('Processing item:', item); // Log item before validation
         if (typeof item.price_kc !== 'number' || typeof item.quantity !== 'number') {
-            console.error('Invalid item data:', item);
             return res.status(400).json({ message: 'Invalid item data' });
         }
         item.totalPrice = item.price_kc * item.quantity; // Calculate totalPrice for each item
-        console.log('Item after calculation:', item); // Log item after calculation
     }
 
     // Calculate total prices
     orderData.total_price_kc = orderData.items.reduce((total, item) => total + item.totalPrice, 0);
     orderData.total_price_eu = orderData.total_price_kc * 0.04; // Assuming 1 Kč = 0.04 €
 
-    console.log('Calculated total_price_kc:', orderData.total_price_kc); // Log total_price_kc
-    console.log('Calculated total_price_eu:', orderData.total_price_eu); // Log total_price_eu
-
-    console.log('Final orderData before saving:', orderData); // Log final orderData before saving
-
     try {
         await orderModel.createOrder(orderData);
         res.status(201).json({ message: 'Order created successfully' });
     } catch (error) {
-        console.error('Error creating order:', error);
         res.status(500).json({ message: 'Failed to create order' });
     }
 }
+
+module.exports = { getOrders, createOrder, updateOrderStatus };
 
 // Update order status
 async function updateOrderStatus(req, res) {

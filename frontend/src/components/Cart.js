@@ -16,7 +16,6 @@ function Cart() {
             totalPrice: parseFloat(item.price_kc) * (item.quantity || 1) // Calculate totalPrice
         }));
 
-        console.log('Items:', items); // Log items
 
         // Calculate total prices
         const total_price_kc = items.reduce((total, item) => total + item.totalPrice, 0);
@@ -31,7 +30,6 @@ function Cart() {
             items
         };
 
-        console.log('Order Data:', orderData); // Log orderData
 
         try {
             const response = await placeOrder(orderData);
