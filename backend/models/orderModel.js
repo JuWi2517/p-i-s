@@ -5,7 +5,7 @@ async function getAllOrders() {
     const conn = await pool.getConnection();
     try {
         const sql = `
-            SELECT orders.id, orders.user_id, orders.order_date, orders.status
+            SELECT orders.id, orders.user_id, orders.order_date, orders.status, orders.total_price_kc, orders.total_price_eu
             FROM orders;
         `;
         const rows = await conn.query(sql);

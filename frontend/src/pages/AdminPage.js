@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { addProduct, fetchProducts, updateProduct } from '../api/api';
+import { addProduct, fetchProducts, updateProduct, fetchOrders, updateOrder } from '../api/api';
 import ModifyProductModal from '../components/ModifyProductModal';
+import ModifyOrderModal from '../components/ModifyOrderModal';
 
 function AdminPage() {
     const [form, setForm] = useState({
         name: '', description: '', category: '', price_kc: '', price_eur: '', stock: '', image_path: ''
     });
     const [products, setProducts] = useState([]);
+    const [orders, setOrders] = useState([]); // State to store orders
     const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for modification
-    const [showModal, setShowModal] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null); // Selected order for modification
+    const [showProductModal, setShowProductModal] = useState(false);
+    const [showOrderModal, setShowOrderModal] = useState(false);
 
     useEffect(() => {
         loadProducts();
+        loadOrders(); // Load orders when the component mounts
     }, []);
 
     const loadProducts = async () => {
@@ -20,6 +25,15 @@ function AdminPage() {
             setProducts(response.data);
         } catch (error) {
             console.error('Failed to load products:', error);
+        }
+    };
+
+    const loadOrders = async () => {
+        try {
+            const response = await fetchOrders();
+            setOrders(response.data);
+        } catch (error) {
+            console.error('Failed to load orders:', error);
         }
     };
 
@@ -39,57 +53,91 @@ function AdminPage() {
         }
     };
 
-    // Handle modify button click for each product
-    const handleModifyClick = (product) => {
-        setSelectedProduct(product);
-        setShowModal(true);
-    };
-
-    // Convert `id` to an integer if needed
-    const handleUpdateProduct = async (updatedProduct) => {
+    const handleSaveProduct = async (product) => {
         try {
-            // Ensure the id is an integer before sending it to the backend
-            updatedProduct.id = parseInt(updatedProduct.id, 10);
-            await updateProduct(updatedProduct);
-            setShowModal(false);
-            loadProducts();
+            await updateProduct(product.id, product);
+            loadProducts(); // Refresh the product list
         } catch (error) {
-            console.error('Failed to update product:', error);
+            alert('Failed to update product!');
         }
     };
-    
 
-    
+    const handleSaveOrder = async (order) => {
+        try {
+            await updateOrder(order);
+            loadOrders(); // Refresh the order list
+        } catch (error) {
+            alert('Failed to update order!');
+        }
+    };
 
     return (
         <div>
-            <h1>Admin - Add Product</h1>
+            <h1>Admin Page</h1>
             <form onSubmit={handleSubmit}>
-                <input name="name" placeholder="Name" value={form.name} onChange={handleChange} />
-                <input name="description" placeholder="Description" value={form.description} onChange={handleChange} />
-                <input name="category" placeholder="Category" value={form.category} onChange={handleChange} />
-                <input name="price_kc" type="number" placeholder="Price (Kč)" value={form.price_kc} onChange={handleChange} />
-                <input name="price_eur" type="number" placeholder="Price (€)" value={form.price_eur} onChange={handleChange} />
-                <input name="stock" type="number" placeholder="Stock" value={form.stock} onChange={handleChange} />
-                <input name="image_path" type="text" placeholder="Image Path" value={form.image_path} onChange={handleChange} />
+                <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
+                <input type="text" name="description" value={form.description} onChange={handleChange} placeholder="Description" required />
+                <input type="text" name="category" value={form.category} onChange={handleChange} placeholder="Category" required />
+                <input type="number" name="price_kc" value={form.price_kc} onChange={handleChange} placeholder="Price (Kč)" required />
+                <input type="number" name="price_eur" value={form.price_eur} onChange={handleChange} placeholder="Price (€)" required />
+                <input type="number" name="stock" value={form.stock} onChange={handleChange} placeholder="Stock" required />
+                <input type="text" name="image_path" value={form.image_path} onChange={handleChange} placeholder="Image Path" required />
                 <button type="submit">Add Product</button>
             </form>
 
-            <h2>Products List</h2>
+            <h2>Products</h2>
             <ul>
-                {products.map((product) => (
+                {products.map(product => (
                     <li key={product.id}>
-                        {product.name} - Kč {product.price_kc} / € {product.price_eur}
-                        <button onClick={() => handleModifyClick(product)}>Modify</button>
+                        {product.name} - {product.price_kc} Kč
+                        <button onClick={() => { setSelectedProduct(product); setShowProductModal(true); }}>Modify</button>
                     </li>
                 ))}
             </ul>
 
-            {showModal && selectedProduct && (
+            <h2>Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User ID</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                        <th>Total Price (Kč)</th>
+                        <th>Total Price (€)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {orders.map(order => (
+                        <tr key={order.id}>
+                            <td>{order.id}</td>
+                            <td>{order.user_id}</td>
+                            <td>{new Date(order.order_date).toLocaleString()}</td>
+                            <td>{order.status}</td>
+                            <td>{order.total_price_kc}</td>
+                            <td>{order.total_price_eu}</td>
+                            <td>
+                                <button onClick={() => { setSelectedOrder(order); setShowOrderModal(true); }}>Modify</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {showProductModal && selectedProduct && (
                 <ModifyProductModal
                     product={selectedProduct}
-                    onClose={() => setShowModal(false)}
-                    onSave={handleUpdateProduct}
+                    onClose={() => setShowProductModal(false)}
+                    onSave={handleSaveProduct}
+                />
+            )}
+
+            {showOrderModal && selectedOrder && (
+                <ModifyOrderModal
+                    order={selectedOrder}
+                    onClose={() => setShowOrderModal(false)}
+                    onSave={handleSaveOrder}
                 />
             )}
         </div>

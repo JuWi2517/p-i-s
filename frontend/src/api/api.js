@@ -7,5 +7,7 @@ export const loginUser = (userData) => axios.post(`${API_URL}/auth/login`, userD
 export const fetchProducts = () => axios.get(`${API_URL}/products`);
 export const fetchProductById = (id) => axios.get(`${API_URL}/products/${id}`);
 export const addProduct = (productData) => axios.post(`${API_URL}/products`, productData);
-export const updateProduct = (productData) => axios.put(`${API_URL}/products/${productData.id}`, productData);
+export const updateProduct = (id, productData) => axios.put(`${API_URL}/products/${id}`, productData);
 export const placeOrder = (orderData) => axios.post(`${API_URL}/orders`, orderData);
+export const fetchOrders = () => axios.get(`${API_URL}/orders`);
+export const updateOrder = (orderData) => axios.put(`${API_URL}/orders/${orderData.id}`, orderData);
