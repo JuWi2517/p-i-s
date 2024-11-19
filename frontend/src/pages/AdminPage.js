@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { addProduct, fetchProducts, updateProduct, fetchOrders, updateOrder } from '../api/api';
+import { addProduct, fetchProducts, updateProduct, fetchOrders, updateOrder, fetchUsers } from '../api/api';
 import ModifyProductModal from '../components/ModifyProductModal';
 import ModifyOrderModal from '../components/ModifyOrderModal';
+import { Line } from 'react-chartjs-2';
+import 'chart.js/auto';
 
 function AdminPage() {
     const [form, setForm] = useState({
@@ -9,6 +11,7 @@ function AdminPage() {
     });
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]); // State to store orders
+    const [users, setUsers] = useState([]); // State to store users
     const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for modification
     const [selectedOrder, setSelectedOrder] = useState(null); // Selected order for modification
     const [showProductModal, setShowProductModal] = useState(false);
@@ -17,6 +20,7 @@ function AdminPage() {
     useEffect(() => {
         loadProducts();
         loadOrders(); // Load orders when the component mounts
+        loadUsers(); // Load users when the component mounts
     }, []);
 
     const loadProducts = async () => {
@@ -34,6 +38,15 @@ function AdminPage() {
             setOrders(response.data);
         } catch (error) {
             console.error('Failed to load orders:', error);
+        }
+    };
+
+    const loadUsers = async () => {
+        try {
+            const response = await fetchUsers();
+            setUsers(response.data);
+        } catch (error) {
+            console.error('Failed to load users:', error);
         }
     };
 
@@ -69,6 +82,20 @@ function AdminPage() {
         } catch (error) {
             alert('Failed to update order!');
         }
+    };
+
+    // Prepare data for the profit graph
+    const profitData = {
+        labels: orders.map(order => new Date(order.order_date).toLocaleDateString()),
+        datasets: [
+            {
+                label: 'Profit (Kč)',
+                data: orders.map(order => order.total_price_kc),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+            },
+        ],
     };
 
     return (
@@ -124,6 +151,31 @@ function AdminPage() {
                     ))}
                 </tbody>
             </table>
+
+            <h2>Users</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map(user => (
+                        <tr key={user.id}>
+                            <td>{user.id}</td>
+                            <td>{user.name}</td>
+                            <td>{user.email}</td>
+                            <td>{user.role}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <h2>Profits</h2>
+            <Line data={profitData} />
 
             {showProductModal && selectedProduct && (
                 <ModifyProductModal

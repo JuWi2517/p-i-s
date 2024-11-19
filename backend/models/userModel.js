@@ -25,4 +25,17 @@ async function createUser({ name, email, password }) {
     }
 }
 
-module.exports = { findUserByEmail, createUser };
+// Get all users
+async function getAllUsers() {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const sql = 'SELECT id, name, email, role FROM users';
+        const rows = await conn.query(sql);
+        return rows;
+    } finally {
+        if (conn) conn.release();
+    }
+}
+
+module.exports = { findUserByEmail, createUser, getAllUsers };
