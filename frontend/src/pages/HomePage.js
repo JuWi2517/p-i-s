@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ProductList from '../components/ProductList';
+import '../css/HomePage.css';
 
 function HomePage() {
     return (
-        <div>
-            <h1>Welcome to the E-Shop</h1>
+        <div className="home-container">
             <Link to="/cart">
-                <button>Go to Cart</button>
+                <button className="cart-button">Go to Cart</button>
             </Link>
             <ProductList />
         </div>

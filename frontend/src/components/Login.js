@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { loginUser } from '../api/api';
 import { useNavigate } from 'react-router-dom';
+import '../css/Login.css';
 
 function Login() {
     const [form, setForm] = useState({ email: '', password: '' });
@@ -15,9 +16,9 @@ function Login() {
             if (response.data.token) {
                 localStorage.setItem('authToken', response.data.token);
                 alert('Login successful!');
-                navigate('/home'); // Redirect to home page after successful login
+                navigate('/home');
             } else {
-                alert("Login failed: No token received.");
+                alert('Login failed: No token received.');
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -26,15 +27,31 @@ function Login() {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} />
-                <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} />
-                <button type="submit">Login</button>
+        <div className="login-container">
+            <h2 className="login-title">Login</h2>
+            <form className="login-form" onSubmit={handleSubmit}>
+                <input
+                    className="login-input"
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    value={form.email}
+                    onChange={handleChange}
+                />
+                <input
+                    className="login-input"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    value={form.password}
+                    onChange={handleChange}
+                />
+                <button className="login-button" type="submit">Login</button>
             </form>
-            <p>Don't have an account?</p>
-            <button onClick={() => navigate('/register')}>Go to Register</button>
+            <p className="register-prompt">Don't have an account?</p>
+            <button className="register-button" onClick={() => navigate('/register')}>
+                Go to Register
+            </button>
         </div>
     );
 }

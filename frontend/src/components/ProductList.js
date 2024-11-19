@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchProducts } from '../api/api';
-import './ProductList.css';
+import '../css/ProductList.css';
 
 function ProductList() {
     const [products, setProducts] = useState([]);
@@ -40,25 +40,25 @@ function ProductList() {
         return matchesSearch && matchesFilter && matchesCategory;
     });
 
-    // Extract unique categories from products
     const categories = ['all', ...new Set(products.map(product => product.category))];
 
     return (
-        <div>
-            <h1>Products</h1>
+        <div className="product-list-container">
+            <h1 className="product-list-title">Products</h1>
             <div className="filters">
                 <input
                     type="text"
+                    className="search-input"
                     placeholder="Search products..."
                     value={searchTerm}
                     onChange={handleSearchChange}
                 />
-                <select value={filter} onChange={handleFilterChange}>
+                <select className="filter-select" value={filter} onChange={handleFilterChange}>
                     <option value="all">All</option>
                     <option value="inStock">In Stock</option>
                     <option value="outOfStock">Out of Stock</option>
                 </select>
-                <select value={category} onChange={handleCategoryChange}>
+                <select className="filter-select" value={category} onChange={handleCategoryChange}>
                     {categories.map((cat) => (
                         <option key={cat} value={cat}>{cat}</option>
                     ))}
@@ -68,8 +68,8 @@ function ProductList() {
                 {filteredProducts.map((product) => (
                     <Link to={`/product/${product.id}`} key={product.id} className="product-card">
                         <img src={`/${product.image_path}`} alt={product.name} className="product-image" />
-                        <h2>{product.name}</h2>
-                        <p>{product.price_kc} Kč</p>
+                        <h2 className="product-name">{product.name}</h2>
+                        <p className="product-price">{product.price_kc} Kč</p>
                         <p className={product.stock > 0 ? 'stock-available' : 'stock-unavailable'}>
                             {product.stock > 0 ? `In Stock: ${product.stock}` : 'Out of Stock'}
                         </p>
