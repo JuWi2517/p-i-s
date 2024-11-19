@@ -18,39 +18,40 @@ async function getAllOrders() {
     }
 }
 
+
+
 // Create a new order
 async function createOrder(orderData) {
-    const { user_id, items } = orderData;
     const conn = await pool.getConnection();
     try {
-        await conn.beginTransaction();
+        console.log('orderData:', orderData); // Log orderData
 
-        // Insert order record
-        const sqlOrder = `INSERT INTO orders (user_id, order_date, status) VALUES (?, NOW(), 'processing')`;
-        const [orderResult] = await conn.query(sqlOrder, [user_id]);
-        const orderId = orderResult.insertId;
+        const sql = `INSERT INTO orders (user_id, order_date, status, total_price_kc, total_price_eu) VALUES (?, ?, ?, ?, ?)`;
+        const orderDate = new Date(orderData.order_date).toISOString().slice(0, 19).replace('T', ' ');
+        const [result] = await conn.query(sql, [orderData.user_id, orderDate, orderData.status, orderData.total_price_kc, orderData.total_price_eu]);
 
-        // Insert order items
-        const sqlItems = `INSERT INTO orderitems (order_id, product_id, quantity, total_price_kc, total_price_eur) VALUES ?`;
-        const itemValues = items.map(item => [
-            orderId,
-            item.product_id,
-            item.quantity,
-            item.total_price_kc,
-            item.total_price_eur,
+        const orderId = result.insertId;
+        const orderItemsSql = `INSERT INTO orderitems (order_id, product_id, quantity, total_price_kc, total_price_eu) VALUES ?`;
+        const orderItemsData = orderData.items.map(item => [
+            orderId, 
+            item.productId, 
+            item.quantity, 
+            item.totalPrice, 
+            item.totalPrice * 0.04
         ]);
 
-        await conn.query(sqlItems, [itemValues]);
-        await conn.commit();
+        console.log('orderItemsData:', orderItemsData); // Log orderItemsData
 
-        return { orderId };
-    } catch (error) {
-        await conn.rollback();
-        throw error;
+        await conn.query(orderItemsSql, [orderItemsData]);
+
+        return result;
     } finally {
         conn.release();
     }
 }
+
+
+
 
 // Update the status of an order
 async function updateOrderStatus(id, status) {
