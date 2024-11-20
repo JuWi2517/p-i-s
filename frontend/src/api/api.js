@@ -11,4 +11,3 @@ export const updateProduct = (id, productData) => axios.put(`${API_URL}/products
 export const placeOrder = (orderData) => axios.post(`${API_URL}/orders`, orderData);
 export const fetchOrders = () => axios.get(`${API_URL}/orders`);
 export const updateOrder = (orderData) => axios.put(`${API_URL}/orders/${orderData.id}`, orderData);
-export const fetchUsers = () => axios.get(`${API_URL}/users`);

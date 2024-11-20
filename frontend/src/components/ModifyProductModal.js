@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../css/ModifyProductModal.css';
 
 function ModifyProductModal({ product, onClose, onSave }) {
     const [formData, setFormData] = useState({
@@ -8,21 +9,21 @@ function ModifyProductModal({ product, onClose, onSave }) {
         price_kc: product.price_kc,
         price_eur: product.price_eur,
         stock: product.stock,
-        image_path: product.image_path
+        image_path: product.image_path,
     });
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ ...product, ...formData }); // Pass updated product data to the save function
+        onSave({ ...product, ...formData });
     };
 
     return (
         <div className="modal">
             <div className="modal-content">
-                <h3>Modify Product</h3>
-                <form onSubmit={handleSubmit}>
+                <h3 className="modal-title">Modify Product</h3>
+                <form className="modal-form" onSubmit={handleSubmit}>
                     <label>
                         Name:
                         <input
@@ -30,6 +31,7 @@ function ModifyProductModal({ product, onClose, onSave }) {
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
+                            className="modal-input"
                         />
                     </label>
                     <label>
@@ -38,6 +40,7 @@ function ModifyProductModal({ product, onClose, onSave }) {
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
+                            className="modal-textarea"
                         />
                     </label>
                     <label>
@@ -47,6 +50,7 @@ function ModifyProductModal({ product, onClose, onSave }) {
                             name="category"
                             value={formData.category}
                             onChange={handleChange}
+                            className="modal-input"
                         />
                     </label>
                     <label>
@@ -56,6 +60,7 @@ function ModifyProductModal({ product, onClose, onSave }) {
                             name="price_kc"
                             value={formData.price_kc}
                             onChange={handleChange}
+                            className="modal-input"
                         />
                     </label>
                     <label>
@@ -65,6 +70,7 @@ function ModifyProductModal({ product, onClose, onSave }) {
                             name="price_eur"
                             value={formData.price_eur}
                             onChange={handleChange}
+                            className="modal-input"
                         />
                     </label>
                     <label>
@@ -74,6 +80,7 @@ function ModifyProductModal({ product, onClose, onSave }) {
                             name="stock"
                             value={formData.stock}
                             onChange={handleChange}
+                            className="modal-input"
                         />
                     </label>
                     <label>
@@ -83,10 +90,15 @@ function ModifyProductModal({ product, onClose, onSave }) {
                             name="image_path"
                             value={formData.image_path}
                             onChange={handleChange}
+                            className="modal-input"
                         />
                     </label>
-                    <button type="submit">Save Changes</button>
-                    <button type="button" onClick={onClose}>Cancel</button>
+                    <div className="modal-buttons">
+                        <button type="submit" className="modal-save-button">Save Changes</button>
+                        <button type="button" className="modal-cancel-button" onClick={onClose}>
+                            Cancel
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../api/api';
+import '../css/Register.css';
 
 function Register() {
     const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -13,23 +14,45 @@ function Register() {
         try {
             await registerUser(form);
             alert('Registration successful! Please log in.');
-            navigate('/login'); // Redirect to login after successful registration
+            navigate('/login');
         } catch (error) {
             alert('Registration failed!');
         }
     };
 
     return (
-        <div>
-            <h2>Register</h2>
-            <form onSubmit={handleSubmit}>
-                <input name="name" placeholder="Name" value={form.name} onChange={handleChange} />
-                <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} />
-                <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} />
-                <button type="submit">Register</button>
+        <div className="register-container">
+            <h2 className="register-title">Register</h2>
+            <form className="register-form" onSubmit={handleSubmit}>
+                <input
+                    className="register-input"
+                    name="name"
+                    placeholder="Name"
+                    value={form.name}
+                    onChange={handleChange}
+                />
+                <input
+                    className="register-input"
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    value={form.email}
+                    onChange={handleChange}
+                />
+                <input
+                    className="register-input"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    value={form.password}
+                    onChange={handleChange}
+                />
+                <button className="register-button" type="submit">Register</button>
             </form>
-            <p>Already have an account?</p>
-            <button onClick={() => navigate('/login')}>Go to Login</button>
+            <p className="login-prompt">Already have an account?</p>
+            <button className="login-button" onClick={() => navigate('/login')}>
+                Go to Login
+            </button>
         </div>
     );
 }

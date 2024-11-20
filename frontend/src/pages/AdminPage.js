@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { addProduct, fetchProducts, updateProduct, fetchOrders, updateOrder, fetchUsers } from '../api/api';
+import { addProduct, fetchProducts, updateProduct, fetchOrders, updateOrder } from '../api/api';
 import ModifyProductModal from '../components/ModifyProductModal';
 import ModifyOrderModal from '../components/ModifyOrderModal';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
+import '../css/AdminPage.css'; // Correct the import path
 
 function AdminPage() {
     const [form, setForm] = useState({
@@ -11,7 +12,6 @@ function AdminPage() {
     });
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]); // State to store orders
-    const [users, setUsers] = useState([]); // State to store users
     const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for modification
     const [selectedOrder, setSelectedOrder] = useState(null); // Selected order for modification
     const [showProductModal, setShowProductModal] = useState(false);
@@ -20,7 +20,6 @@ function AdminPage() {
     useEffect(() => {
         loadProducts();
         loadOrders(); // Load orders when the component mounts
-        loadUsers(); // Load users when the component mounts
     }, []);
 
     const loadProducts = async () => {
@@ -38,15 +37,6 @@ function AdminPage() {
             setOrders(response.data);
         } catch (error) {
             console.error('Failed to load orders:', error);
-        }
-    };
-
-    const loadUsers = async () => {
-        try {
-            const response = await fetchUsers();
-            setUsers(response.data);
-        } catch (error) {
-            console.error('Failed to load users:', error);
         }
     };
 
@@ -99,7 +89,7 @@ function AdminPage() {
     };
 
     return (
-        <div>
+        <div className="container">
             <h1>Admin Page</h1>
             <form onSubmit={handleSubmit}>
                 <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
@@ -145,37 +135,17 @@ function AdminPage() {
                             <td>{order.total_price_kc}</td>
                             <td>{order.total_price_eu}</td>
                             <td>
-                                <button onClick={() => { setSelectedOrder(order); setShowOrderModal(true); }}>Modify</button>
+                                <button className="modify-button" onClick={() => { setSelectedOrder(order); setShowOrderModal(true); }}>Modify</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
 
-            <h2>Users</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map(user => (
-                        <tr key={user.id}>
-                            <td>{user.id}</td>
-                            <td>{user.name}</td>
-                            <td>{user.email}</td>
-                            <td>{user.role}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
             <h2>Profits</h2>
-            <Line data={profitData} />
+            <div className="chart-container">
+                <Line data={profitData} />
+            </div>
 
             {showProductModal && selectedProduct && (
                 <ModifyProductModal
