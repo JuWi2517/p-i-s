@@ -4,22 +4,22 @@ import ModifyProductModal from '../components/ModifyProductModal';
 import ModifyOrderModal from '../components/ModifyOrderModal';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
-import '../css/AdminPage.css'; // Correct the import path
+import '../css/AdminPage.css';
 
 function AdminPage() {
     const [form, setForm] = useState({
         name: '', description: '', category: '', price_kc: '', price_eur: '', stock: '', image_path: ''
     });
     const [products, setProducts] = useState([]);
-    const [orders, setOrders] = useState([]); // State to store orders
-    const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for modification
-    const [selectedOrder, setSelectedOrder] = useState(null); // Selected order for modification
+    const [orders, setOrders] = useState([]);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedOrder, setSelectedOrder] = useState(null);
     const [showProductModal, setShowProductModal] = useState(false);
     const [showOrderModal, setShowOrderModal] = useState(false);
 
     useEffect(() => {
         loadProducts();
-        loadOrders(); // Load orders when the component mounts
+        loadOrders();
     }, []);
 
     const loadProducts = async () => {
@@ -40,17 +40,15 @@ function AdminPage() {
         }
     };
 
-    // Handle change for add product form
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-    // Handle submit for add product form
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             await addProduct(form);
             alert('Product added successfully!');
             setForm({ name: '', description: '', category: '', price_kc: '', price_eur: '', stock: '', image_path: '' });
-            loadProducts(); // Refresh the product list
+            loadProducts();
         } catch (error) {
             alert('Failed to add product!');
         }
@@ -59,7 +57,7 @@ function AdminPage() {
     const handleSaveProduct = async (product) => {
         try {
             await updateProduct(product.id, product);
-            loadProducts(); // Refresh the product list
+            loadProducts();
         } catch (error) {
             alert('Failed to update product!');
         }
@@ -68,13 +66,12 @@ function AdminPage() {
     const handleSaveOrder = async (order) => {
         try {
             await updateOrder(order);
-            loadOrders(); // Refresh the order list
+            loadOrders();
         } catch (error) {
             alert('Failed to update order!');
         }
     };
 
-    // Prepare data for the profit graph
     const profitData = {
         labels: orders.map(order => new Date(order.order_date).toLocaleDateString()),
         datasets: [

@@ -1,6 +1,5 @@
 const productModel = require('../models/productModel');
 
-// Retrieve all products
 async function getProducts(req, res) {
     try {
         const products = await productModel.getAllProducts();
@@ -13,7 +12,7 @@ async function getProducts(req, res) {
 
 async function getProductById(req, res) {
     try {
-        const id = parseInt(req.params.id, 10); // Explicitly convert to integer
+        const id = parseInt(req.params.id, 10);
         const product = await productModel.getProductById(id);
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
@@ -25,7 +24,6 @@ async function getProductById(req, res) {
 }
 
 
-// Add a new product
 async function addProduct(req, res) {
     try {
         const data = req.body;
@@ -37,7 +35,6 @@ async function addProduct(req, res) {
     }
 }
 
-// Update an existing product
 async function updateProduct(req, res) {
     try {
         const { id } = req.params;

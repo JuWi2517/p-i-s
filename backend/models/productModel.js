@@ -1,6 +1,5 @@
 const pool = require('../db');
 
-// Retrieve all products
 async function getAllProducts() {
     const conn = await pool.getConnection();
     const sql = 'SELECT * FROM products';
@@ -9,7 +8,6 @@ async function getAllProducts() {
     return rows;
 }
 
-// Create a new product
 async function createProduct(data) {
     const { name, description, category, price_kc, price_eur, stock, image_path } = data;
     const conn = await pool.getConnection();
@@ -18,7 +16,6 @@ async function createProduct(data) {
     conn.release();
 }
 
-// Update an existing product
 async function updateProduct(id, data) {
     const { name, description, category, price_kc, price_eur, stock, image_path } = data;
     let conn;
@@ -46,11 +43,9 @@ async function getProductById(id) {
         const sql = 'SELECT * FROM products WHERE id = ?';
         const [rows] = await conn.query(sql, [id]);
         
-        // Check if rows is an array and has at least one element
         if (Array.isArray(rows) && rows.length > 0) {
             return rows[0];
         } else if (typeof rows === 'object' && rows !== null) {
-            // Handle case where rows is an object
             return rows;
         } else {
             return null;

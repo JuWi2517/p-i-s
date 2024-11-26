@@ -121,7 +121,6 @@ table tr:hover {
     transform: translateY(-5px);
 }
 
-/* Style for modify buttons in the orders table */
 table .modify-button {
     background-color: #28a745;
     color: #fff;

@@ -1,6 +1,5 @@
 const orderModel = require('../models/orderModel');
 
-// Retrieve all orders
 async function getOrders(req, res) {
     try {
         const orders = await orderModel.getAllOrders();
@@ -10,7 +9,6 @@ async function getOrders(req, res) {
     }
 }
 
-// Create a new order
 async function createOrder(req, res) {
     const orderData = req.body;
 
@@ -18,9 +16,8 @@ async function createOrder(req, res) {
         return res.status(400).json({ message: 'Invalid order data' });
     }
 
-    // Calculate total prices
     orderData.total_price_kc = orderData.total_price_kc || 0;
-    orderData.total_price_eu = orderData.total_price_kc * 0.04; // Assuming 1 Kč = 0.04 €
+    orderData.total_price_eu = orderData.total_price_kc * 0.04;
 
     try {
         await orderModel.createOrder(orderData);
@@ -30,7 +27,6 @@ async function createOrder(req, res) {
     }
 }
 
-// Update order status
 async function updateOrderStatus(req, res) {
     const { id } = req.params;
     const { status } = req.body;

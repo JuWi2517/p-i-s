@@ -1,6 +1,5 @@
 const pool = require('../db');
 
-// Retrieve all orders
 async function getAllOrders() {
     const conn = await pool.getConnection();
     try {
@@ -15,7 +14,6 @@ async function getAllOrders() {
     }
 }
 
-// Create a new order
 async function createOrder(orderData) {
     const conn = await pool.getConnection();
     try {
@@ -25,14 +23,12 @@ async function createOrder(orderData) {
 
         return result;
     } catch (error) {
-        // Handle the error silently
-        return null; // Return null or any other appropriate value
+        return null;
     } finally {
         conn.release();
     }
 }
 
-// Update the status of an order
 async function updateOrderStatus(id, status) {
     const conn = await pool.getConnection();
     try {
