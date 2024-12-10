@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchProductById } from '../api/api';
 import { CartContext } from './CartContext';
+import { CurrencyContext } from './CurrencyContext';
 import '../css/ProductDetail.css';
 
 function ProductDetail() {
@@ -10,6 +11,7 @@ function ProductDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { addToCart } = useContext(CartContext);
+    const { currency } = useContext(CurrencyContext);
 
     useEffect(() => {
         const loadProduct = async () => {
@@ -46,7 +48,7 @@ function ProductDetail() {
             <p className="product-description">{product.description}</p>
             <p className="product-category">Category: {product.category}</p>
             <p className="product-price">
-                Price: {product.price_kc} Kč / {product.price_eur} €
+                Price: {currency === 'CZK' ? `${product.price_kc} Kč` : `${(product.price_kc * 0.04).toFixed(2)} €`}
             </p>
             <p className={`product-stock ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
                 {product.stock > 0 ? `In Stock: ${product.stock}` : 'Out of Stock'}

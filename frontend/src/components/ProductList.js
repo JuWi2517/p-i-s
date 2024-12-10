@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchProducts } from '../api/api';
+import { CurrencyContext } from './CurrencyContext';
 import '../css/ProductList.css';
 
 function ProductList() {
     const [products, setProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filter, setFilter] = useState('all');
-    const [category, setCategory] = useState('all');
+    const { currency } = useContext(CurrencyContext);
 
     useEffect(() => {
         const loadProducts = async () => {
@@ -15,67 +15,47 @@ function ProductList() {
                 const response = await fetchProducts();
                 setProducts(response.data);
             } catch (error) {
-                console.error('Failed to fetch products:', error);
+                console.error('Failed to load products:', error);
             }
         };
         loadProducts();
     }, []);
 
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
     };
 
-    const handleFilterChange = (event) => {
-        setFilter(event.target.value);
-    };
-
-    const handleCategoryChange = (event) => {
-        setCategory(event.target.value);
-    };
-
-    const filteredProducts = products.filter((product) => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFilter = filter === 'all' || (filter === 'inStock' && product.stock > 0) || (filter === 'outOfStock' && product.stock === 0);
-        const matchesCategory = category === 'all' || product.category === category;
-        return matchesSearch && matchesFilter && matchesCategory;
-    });
-
-    const categories = ['all', ...new Set(products.map(product => product.category))];
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="product-list-container">
-            <h1 className="product-list-title">Products</h1>
-            <div className="filters">
-                <input
-                    type="text"
-                    className="search-input"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                />
-                <select className="filter-select" value={filter} onChange={handleFilterChange}>
-                    <option value="all">All</option>
-                    <option value="inStock">In Stock</option>
-                    <option value="outOfStock">Out of Stock</option>
-                </select>
-                <select className="filter-select" value={category} onChange={handleCategoryChange}>
-                    {categories.map((cat) => (
-                        <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                </select>
-            </div>
-            <div className="product-list">
-                {filteredProducts.map((product) => (
-                    <Link to={`/product/${product.id}`} key={product.id} className="product-card">
-                        <img src={`/${product.image_path}`} alt={product.name} className="product-image" />
-                        <h2 className="product-name">{product.name}</h2>
-                        <p className="product-price">{product.price_kc} Kč</p>
-                        <p className={product.stock > 0 ? 'stock-available' : 'stock-unavailable'}>
-                            {product.stock > 0 ? `In Stock: ${product.stock}` : 'Out of Stock'}
-                        </p>
-                    </Link>
+            <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+            />
+            <ul className="product-list">
+                {filteredProducts.map(product => (
+                    <li key={product.id} className="product-item">
+                        <Link to={`/product/${product.id}`} className="product-link">
+                            <img src={`/${product.image_path}`} alt={product.name} className="product-image" />
+                            <div className="product-details">
+                                <h3 className="product-name">{product.name}</h3>
+                                <p className="product-price">
+                                    {currency === 'CZK' ? `${product.price_kc} Kč` : `${(product.price_kc * 0.04).toFixed(2)} €`}
+                                </p>
+                                <p className={product.stock > 0 ? 'stock-available' : 'stock-unavailable'}>
+                                    {product.stock > 0 ? `In Stock: ${product.stock}` : 'Out of Stock'}
+                                </p>
+                            </div>
+                        </Link>
+                    </li>
                 ))}
-            </div>
+            </ul>
         </div>
     );
 }

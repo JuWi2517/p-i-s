@@ -2,11 +2,13 @@ import React, { useContext } from 'react';
 import { placeOrder, updateProduct } from '../api/api';
 import { CartContext } from './CartContext';
 import { UserContext } from './UserContext';
+import { CurrencyContext } from './CurrencyContext';
 import '../css/Cart.css';
 
 function Cart() {
     const { cart, removeFromCart, clearCart } = useContext(CartContext);
     const { user } = useContext(UserContext);
+    const { currency } = useContext(CurrencyContext);
 
     const handlePlaceOrder = async () => {
         const total_price_kc = cart.reduce((total, item) => total + parseFloat(item.price_kc) * (item.quantity || 1), 0);
@@ -79,14 +81,14 @@ function Cart() {
                     <li key={index} className="cart-item">
                         <span className="item-name">{item.name}</span>
                         <span className="item-details">
-                            {item.quantity}x {item.price_kc} Kč = {item.totalPrice.toFixed(2)} Kč ({(item.totalPrice * 0.04).toFixed(2)} €)
+                            {item.quantity}x {currency === 'CZK' ? `${item.price_kc} Kč` : `${(item.price_kc * 0.04).toFixed(2)} €`} = {currency === 'CZK' ? `${item.totalPrice.toFixed(2)} Kč` : `${(item.totalPrice * 0.04).toFixed(2)} €`}
                         </span>
                         <button className="remove-button" onClick={() => removeFromCart(item.id)}>Remove</button>
                     </li>
                 ))}
             </ul>
             <h3 className="cart-total">
-                Total Price: {totalCartPriceKc.toFixed(2)} Kč ({totalCartPriceEu.toFixed(2)} €)
+                Total Price: {currency === 'CZK' ? `${totalCartPriceKc.toFixed(2)} Kč` : `${totalCartPriceEu.toFixed(2)} €`}
             </h3>
             <button className="cart-button" onClick={handlePlaceOrder}>Place Order</button>
         </div>

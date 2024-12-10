@@ -11,15 +11,17 @@ function AdminPage() {
         name: '', description: '', category: '', price_kc: '', price_eur: '', stock: '', image_path: ''
     });
     const [products, setProducts] = useState([]);
-    const [orders, setOrders] = useState([]);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [orders, setOrders] = useState([]); 
+    const [filteredOrders, setFilteredOrders] = useState([]); 
+    const [searchQuery, setSearchQuery] = useState(''); 
+    const [selectedProduct, setSelectedProduct] = useState(null); 
+    const [selectedOrder, setSelectedOrder] = useState(null); 
     const [showProductModal, setShowProductModal] = useState(false);
     const [showOrderModal, setShowOrderModal] = useState(false);
 
     useEffect(() => {
         loadProducts();
-        loadOrders();
+        loadOrders(); 
     }, []);
 
     const loadProducts = async () => {
@@ -35,8 +37,20 @@ function AdminPage() {
         try {
             const response = await fetchOrders();
             setOrders(response.data);
+            setFilteredOrders(response.data); 
         } catch (error) {
             console.error('Failed to load orders:', error);
+        }
+    };
+
+    const handleSearchChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+        if (query === '') {
+            setFilteredOrders(orders); 
+        } else {
+            const filtered = orders.filter(order => order.user_id.toString().includes(query));
+            setFilteredOrders(filtered);
         }
     };
 
@@ -48,7 +62,7 @@ function AdminPage() {
             await addProduct(form);
             alert('Product added successfully!');
             setForm({ name: '', description: '', category: '', price_kc: '', price_eur: '', stock: '', image_path: '' });
-            loadProducts();
+            loadProducts(); 
         } catch (error) {
             alert('Failed to add product!');
         }
@@ -57,7 +71,7 @@ function AdminPage() {
     const handleSaveProduct = async (product) => {
         try {
             await updateProduct(product.id, product);
-            loadProducts();
+            loadProducts(); 
         } catch (error) {
             alert('Failed to update product!');
         }
@@ -66,7 +80,7 @@ function AdminPage() {
     const handleSaveOrder = async (order) => {
         try {
             await updateOrder(order);
-            loadOrders();
+            loadOrders(); 
         } catch (error) {
             alert('Failed to update order!');
         }
@@ -110,6 +124,13 @@ function AdminPage() {
             </ul>
 
             <h2>Orders</h2>
+            <input
+                type="text"
+                placeholder="Search by User ID"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="search-input"
+            />
             <table>
                 <thead>
                     <tr>
@@ -123,7 +144,7 @@ function AdminPage() {
                     </tr>
                 </thead>
                 <tbody>
-                    {orders.map(order => (
+                    {filteredOrders.map(order => (
                         <tr key={order.id}>
                             <td>{order.id}</td>
                             <td>{order.user_id}</td>
